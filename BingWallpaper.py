@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import os
 import time
 import datetime
+import json
 
 date = str(datetime.date.today())
 path = '/home/zhong/Wallpaper/'+date+'/'
@@ -12,23 +13,21 @@ def mkdir(path):
         print os.path.exists(path)
         os.system('mkdir '+path)
 
-def getXML():
+def getJson():
     mkdir(path=path)
-    xmlurl = 'http://az517271.vo.msecnd.net/TodayImageService.svc/HPImageArchive?mkt=zh-cn&idx=0'
-    conn = urllib.urlopen(xmlurl)
-    f = open(name=path+date+'.xml', mode='w')
+    url = 'http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1'
+    conn = urllib.urlopen(url)
+    f = open(name=path+date+'.json', mode='w')
     f.write(conn.read())
-    # XML = conn.read()
     f.close()
 
 def getImage():
-    getXML()
-    f = open(name=path+date+'.xml',mode='r')
-    tree = ET.ElementTree(file=f)
-    root = tree.getroot()
-    fullImageUrl = root[6].text
+    getJson()
+    f = open(name=path+date+'.json',mode='r')
+    Json = f.read()
+    ImageUrl = json.loads(Json)['images'][0]['url']
+    conn = urllib.urlopen(url=ImageUrl)
     Image = open(name=path+date+'.jpg', mode='wb')
-    conn = urllib.urlopen(url=fullImageUrl)
     Image.write(conn.read())
     Image.close()
     f.close()
